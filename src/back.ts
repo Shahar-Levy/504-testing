@@ -1,7 +1,10 @@
 import Koa from "koa";
 import config from "./config";
+import bodyParser from "koa-bodyparser";
 
 export function setupBackService(app: Koa) {
+    app.use(bodyParser());
+
     app.use(async (ctx, next) => {
         if (ctx.path.startsWith("/back")) {
             const { minProcessingMS, maxProcessingMS } = config.back;
@@ -9,6 +12,7 @@ export function setupBackService(app: Koa) {
                 minProcessingMS +
                 Math.random() * (maxProcessingMS - minProcessingMS);
             await sleep(processingTime);
+            ctx.body = ctx.request.body;
 
             const body = String(ctx.body);
             ctx.set("content-type", "text/plain");
